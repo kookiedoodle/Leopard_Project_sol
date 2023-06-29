@@ -2,8 +2,8 @@
 #include "Instructor.h"
 #include "Admin.h"
 #include "User.h"
-#include "sqlite3.h"
 
+#include <sqlite3.h>
 #include <iostream>
 #include <string>
 #include <stdio.h>
@@ -13,7 +13,7 @@ using std::cout;
 using std::string;
 using std::endl;
 
-// Callback function for SQLite
+// callback function for SQLite
 static int callback(void* data, int argc, char** argv, char** azColName)
 {
     int i;
@@ -25,10 +25,11 @@ static int callback(void* data, int argc, char** argv, char** azColName)
     return 0;
 }
 
-int main(int argc, char** argv) {
+int main() {
     sqlite3* db;
     char* messageError;
 
+    int exit;  //  sql exit code
     int choice = 0;  // general variable declaration
     int select = 0;
     int ID = 0;
@@ -40,9 +41,9 @@ int main(int argc, char** argv) {
     // create fill in
 
     // open the database
-    int exit = sqlite3_open("leopardDatabase.db", &db);
+    exit = sqlite3_open("leopardDatabase.db", &db);
     if (exit != SQLITE_OK) {
-        std::cerr << "Error opening the database." << std::endl;
+        cout << "Error opening the database." << endl;
         return 1;
     }
 
@@ -59,7 +60,7 @@ int main(int argc, char** argv) {
 
     exit = sqlite3_exec(db, table.c_str(), NULL, 0, &messageError);
     if (exit != SQLITE_OK) {
-        std::cerr << "Error creating the table." << std::endl;
+        cout << "Error creating the table." << endl;
         sqlite3_free(messageError);
         return 1;
     }
@@ -76,7 +77,7 @@ int main(int argc, char** argv) {
 
     exit = sqlite3_exec(db, sql.c_str(), NULL, 0, &messageError);
     if (exit != SQLITE_OK) {
-        std::cerr << "Error inserting values into the table." << std::endl;
+        cout << "Error inserting values into the table." << endl;
         sqlite3_free(messageError);
         return 1;
     }
