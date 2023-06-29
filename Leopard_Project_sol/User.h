@@ -10,6 +10,7 @@ public:
 	//attritude (data)
 	string first_name;
 	string last_name;
+	string placeholder;
 	int ID;
 
 

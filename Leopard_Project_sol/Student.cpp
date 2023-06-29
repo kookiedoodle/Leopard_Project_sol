@@ -28,7 +28,7 @@ Student::Student(string in_first_name, string in_last_name, int in_ID) {
 
 //method
 string Student::search_course(string in_course_name) {
-    return 0;
+    return placeholder;
 }
 void Student::add_course(int in_CRN) {
 
@@ -37,7 +37,7 @@ void Student::drop_course(int in_CRN) {
 
 }
 string Student::display_schedule() {
-
+    return placeholder;
 }
 
 //destreuctor (delete)
