@@ -2,8 +2,8 @@
 #include "Instructor.h"
 #include "Admin.h"
 #include "User.h"
+#include "sqlite3.h"
 
-#include <sqlite3.h>
 #include <iostream>
 #include <string>
 #include <stdio.h>
@@ -81,8 +81,6 @@ int main() {
         sqlite3_free(messageError);
         return 1;
     }
-
-
 
     /*
     while (true) {
