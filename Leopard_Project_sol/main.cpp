@@ -82,95 +82,136 @@ int main() {
         return 1;
     }
 
-    /*
-    while (true) {
-        cout << "---------- What are you? ----------\n";
-        cout << "Enter the following options:\n";
-        cout << "1 - Student\n";
-        cout << "2 - Instructor\n";
-        cout << "3 - Admin\n";
-        cout << "0 - Exit\n";
-        cout << "------------------------------------\n";
-        cout << "Your choice: ";
+    // MENU
+    while (choice != 7) {
+        cout << "========== MENU ==========" << endl;
+        cout << "1. Search for records" << endl;
+        cout << "2. Insert new records" << endl;
+        cout << "3. Print all records from a table" << endl;
+        cout << "4. Create a table" << endl;
+        cout << "5. Update existing records" << endl;
+        cout << "6. Remove records from the database" << endl;
+        cout << "7. Exit" << endl;
+        cout << "Enter your choice: ";
         cin >> choice;
 
         switch (choice) {
-        case 1: {
-            cout << "Enter your first name: ";
-            cin >> first_name;
-            cout << "Enter your last name: ";
-            cin >> last_name;
-            cout << "Enter your ID: ";
-            cin >> ID;
+        case 1: {  //  search records based on certain parameter
+            cout << "Enter the table name (ADMIN, INSTRUCTOR, STUDENT, COURSES): ";
+            string tableName;
+            cin >> tableName;
+            cout << "Enter the search parameter: ";
+            string parameter;
+            cin >> parameter;
 
-            Student student_user(first_name, last_name, ID);
-
-            //  edit: add sections
-            while (1) {
-                cout << "---------What do you want to do?------------\n";
-                cout << "Enter the following options:\n";
-                cout << "1 - search course" << endl;
-                cout << "2 - add course" << endl;
-                cout << "3 - drop course" << endl;
-                cout << "4 - display schedule" << endl;
-                cout << "0 - Exit" << endl;
-
-                cin >> select;
-                switch (select) {
-                case 1:
-                    cout << "Enter the course number name\n";
-                    cin >> course_name;
-
-                    student_user->search_course(course_name);
-                case 2:
-                    cout << "Enter the course CRN\n";
-                    cin >> CRN;
-                    student_user->add_course(CRN);
-                case 3:
-                    cout << "Enter the course CRN\n";
-                    cin >> CRN;
-                    student_user->drop_course(CRN);
-                case 4:
-                    student_user->display_schedule();
-                case 0:
-                    break;
-                }
-                //  edit ended
-                break;
+            //  SQL query
+            string searchQuery = "SELECT * FROM " + tableName + " WHERE PARAMETER='" + parameter + "';";
+            //  execute search
+            exit = sqlite3_exec(db, searchQuery.c_str(), callback, 0, &messageError);
+            if (exit != SQLITE_OK) {
+                cout << "Error searching for records." << endl;
+                sqlite3_free(messageError);
             }
-        case 2: {
-            cout << "Enter your first name: ";
-            cin >> first_name;
-            cout << "Enter your last name: ";
-            cin >> last_name;
-            cout << "Enter your ID: ";
-            cin >> ID;
 
-            Instructor instructor_user(first_name, last_name, ID);
-            instructor_user.showCourses(db);
             break;
         }
-        case 3: {
-            cout << "Enter your first name: ";
-            cin >> first_name;
-            cout << "Enter your last name: ";
-            cin >> last_name;
-            cout << "Enter your ID: ";
-            cin >> ID;
+        case 2: {  //  insert a new record
+            cout << "Enter the table name (ADMIN, INSTRUCTOR, STUDENT, COURSES): ";
+            string tableName;
+            cin >> tableName;
+            //  cont. with ability to insert a new record given parameters
+            //  cont.
 
-            Admin admin_user(first_name, last_name, ID);
-            admin_user.showCourses(db);
+            //  SQL query to insert the record
+            string insertQuery = "INSERT INTO " + tableName + " VALUES (...);";
+            //  execute insert
+            exit = sqlite3_exec(db, insertQuery.c_str(), callback, 0, &messageError);
+            if (exit != SQLITE_OK) {
+                cout << "Error inserting new record." << endl;
+                sqlite3_free(messageError);
+            }
+
             break;
         }
-        case 0:
-            cout << "Exiting the program. Goodbye!\n";
-            sqlite3_close(db);
-            return 0;
-        default:
-            cout << "Invalid choice. Please try again.\n";
+        case 3: {  //  print all records from a table
+            cout << "Enter the table name (ADMIN, INSTRUCTOR, STUDENT, COURSES): ";
+            string tableName;
+            cin >> tableName;
+
+            //  SQL query to retrieve all table records
+            string selectQuery = "SELECT * FROM " + tableName + ";";
+            //  Execute the select query
+            exit = sqlite3_exec(db, selectQuery.c_str(), callback, 0, &messageError);
+            if (exit != SQLITE_OK) {
+                cout << "Error retrieving records from the table." << endl;
+                sqlite3_free(messageError);
+            }
+
+            break;
+        }
+        case 4: {  //  create a table
+            //  cont. with req. fields to create a new table given desired sections
+            //  cont.
+
+            //  construct the SQL query to create the table
+            string createTableQuery = "CREATE TABLE ...";
+            //  execute create table query
+            exit = sqlite3_exec(db, createTableQuery.c_str(), NULL, 0, &messageError);
+            if (exit != SQLITE_OK) {
+                cout << "Error creating the table." << endl;
+                sqlite3_free(messageError);
+            }
+
+            break;
+        }
+        case 5: {  //  update existing records
+            cout << "Enter the table name (ADMIN, INSTRUCTOR, STUDENT, COURSES): ";
+            string tableName;
+            cin >> tableName;
+            //  cont. with req. fields to update the records
+            //  cont.
+
+            //  SQL query to update records
+            string updateQuery = "UPDATE " + tableName + " SET ... WHERE ...;";
+            //  execute the update query
+            exit = sqlite3_exec(db, updateQuery.c_str(), NULL, 0, &messageError);
+            if (exit != SQLITE_OK) {
+                cout << "Error updating records." << endl;
+                sqlite3_free(messageError);
+            }
+
+            break;
+        }
+        case 6: {  //  remove records from the database
+            cout << "Enter the table name (ADMIN, INSTRUCTOR, STUDENT, COURSES): ";
+            string tableName;
+            cin >> tableName;
+            //  cont. with req. fields to remove the records
+            //  ...
+
+            //  SQL query to remove the records
+            string removeQuery = "DELETE FROM " + tableName + " WHERE ...;";
+            //  execute remove query
+            exit = sqlite3_exec(db, removeQuery.c_str(), NULL, 0, &messageError);
+            if (exit != SQLITE_OK) {
+                cout << "Error removing records." << endl;
+                sqlite3_free(messageError);
+            }
+
+            break;
+        }
+        case 7: {
+            cout << "Exiting..." << endl;
+            break;
+        }
+        default: {
+            cout << "Invalid choice. Please try again." << endl;
             break;
         }
         }
-        */
+    }
+
+    sqlite3_close(db);
+
     return 0;
 }
