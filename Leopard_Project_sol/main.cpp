@@ -67,13 +67,13 @@ int main() {
 
     // insert values into the COURSES table
     string sql = "INSERT INTO COURSES VALUES "
-        "(101, 'PROGRAMMING', 'ELECTRICAL', 1230, 'MONDAY', 'SUMMER', 'JUNIOR', 3), "
-        "(102, 'SIGNALS', 'ELECTRICAL', 200, 'TUESDAY', 'SPRING', 'SENIOR', 4), "
-        "(103, 'NETWORKS', 'ELECTRICAL', 100, 'WEDNESDAY', 'FALL', 'FRESHMAN', 4), "
-        "(201, 'MULTIVARIABLE', 'MATH', 330, 'THURSDAY', 'FALL', 'SENIOR', 4), "
-        "(301, 'ETHICS', 'HSS', 800, 'FRIDAY', 'SPRING', 'FRESHMAN', 3), "
-        "(202, 'ECONOMY', 'MATH', 500, 'MONDAY', 'SUMMER', 'JUNIOR', 3), "
-        "(401, 'ENGLISH', 'ENGLISH', 330, 'TUESDAY', 'FALL', 'SOPHOMORE', 3);";
+        "(101, 'DIGITAL', 'BSEE', 1230, 'M', 'SUM', 'FRESH', 4), "
+        "(141, 'SIGNALS', 'BSEE', 1400, 'T', 'SPR', 'SENIOR', 4), "
+        "(211, 'DIGITAL', 'BSCO', 1300, 'W', 'FAL', 'FRESHMAN', 4), "
+        "(231, 'MULTIVARIABLE', 'BSAS', 1530, 'R', 'FAL', 'JUNIOR', 4), "
+        "(331, 'DATA', 'BSCO', 800, 'T', 'SPR', 'JUNIOR', 3), "
+        "(501, 'CINEMA', 'HUSS', 1700, 'M', 'SUM', 'ALL', 3), "
+        "(601, 'DESIGN', 'HUSS', 800, 'F', 'SPR', 'ALL', 3);";
 
     exit = sqlite3_exec(db, sql.c_str(), NULL, 0, &messageError);
     if (exit != SQLITE_OK) {
@@ -209,6 +209,34 @@ int main() {
             break;
         }
         }
+
+        // INSERT new students
+        string insertStudentQuery = "INSERT INTO STUDENT (ID, NAME, SURNAME, GRADYEAR, MAJOR, EMAIL) VALUES "
+            "(20011, 'Harry', 'Potter', '2003', 'BCOS', 'potterh'), "
+            "(20012, 'Luna', 'Lovegood', '2002', 'BSAS', 'lovegoodl');";
+        exit = sqlite3_exec(db, insertStudentQuery.c_str(), NULL, 0, &messageError);
+        if (exit != SQLITE_OK) {
+            cout << "Error inserting new students." << endl;
+            sqlite3_free(messageError);
+        }
+
+        // REMOVE one instructor
+        string removeInstructorQuery = "DELETE FROM INSTRUCTOR WHERE ID = 20006;";
+        exit = sqlite3_exec(db, removeInstructorQuery.c_str(), NULL, 0, &messageError);
+        if (exit != SQLITE_OK) {
+            cout << "Error removing instructor." << endl;
+            sqlite3_free(messageError);
+        }
+
+        // UPDATE admin title
+        string updateAdminQuery = "UPDATE ADMIN SET TITLE = 'Vice-President' WHERE FIRST_NAME = 'Vera' AND LAST_NAME = 'Rubin';";
+        exit = sqlite3_exec(db, updateAdminQuery.c_str(), NULL, 0, &messageError);
+        if (exit != SQLITE_OK) {
+            cout << "Error updating administrator title." << endl;
+            sqlite3_free(messageError);
+        }
+
+
     }
 
     sqlite3_close(db);
