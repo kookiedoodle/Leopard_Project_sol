@@ -236,6 +236,13 @@ int main() {
             sqlite3_free(messageError);
         }
 
+        // search and display instructors for each course
+        string selectCoursesQuery = "SELECT * FROM COURSES;";
+        exit = sqlite3_exec(db, selectCoursesQuery.c_str(), callback, 0, &messageError);
+        if (exit != SQLITE_OK) {
+            cout << "Error retrieving courses." << endl;
+            sqlite3_free(messageError);
+        }
 
     }
 
