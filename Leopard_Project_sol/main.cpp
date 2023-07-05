@@ -10,8 +10,8 @@
 #include <stdio.h>
 
 
-// callback function for SQLite
-static int callback(void* data, int argc, char** argv, char** azColName)
+// callback1 function for SQLite: print information
+static int callback1(void* data, int argc, char** argv, char** azColName)
 {
     int i;
     for (i = 0; i < argc; i++)
@@ -22,14 +22,45 @@ static int callback(void* data, int argc, char** argv, char** azColName)
     return 0;
 }
 
+// Callback function for SQLite
+static int callback2(void* data, int argc, char** argv, char** azColName)
+{
+    // Extract the ID and password from the retrieved row
+    int id = argv[0];
+    string password = argv[3];
+
+    // Check the table name provided in the data pointer
+    string tableName = static_cast<const char*>(data);
+    if (tableName == "STUDENT") {
+        // Create a Student object
+        string firstName = argv[1];
+        string lastName = argv[2];
+        User student(firstName, lastName, id);  // created 
+    }
+    else if (tableName == "INSTRUCTOR") {
+        // Create an Instructor object
+        string firstName = argv[1];
+        string lastName = argv[2];
+        User instructor(firstName, lastName, id);
+    }
+    else if (tableName == "ADMIN") {
+        // Create an Admin object
+        string firstName = argv[1];
+        string lastName = argv[2];
+        User admin(firstName, lastName, id);
+    }
+
+    return 0;
+}
+
 int main() {
-    sqlite3* db;
-    char* messageError;
 
     int exit;  // sql exit code
     int choice = 0;  // general variable declaration
     int select = 0;
     int ID = 0;
+    int password = 0;
+    string username;
     string first_name;
     string last_name;
 
@@ -44,9 +75,44 @@ int main() {
         return 1;
     }
 
+    // ------------------------------------------ [START] LOG IN --------------------------------------------
+    // Get the ID and password from the user
+    cout << "Enter ID (email name): ";
+    cin >> username;
+    cout << "Enter Password (user ID): ";
+    cin >> password;
 
+    // Execute the query for the STUDENT table
+    string query = "SELECT ID, firstName, lastName, password FROM STUDENT WHERE ID=" + ID + " AND password='" + password + "'";
+    exit = sqlite3_exec(db, query.c_str(), callback2, (void*)"STUDENT", nullptr);
+    if (exit != SQLITE_OK) {
+        cout << "Error executing query for STUDENT table: " << sqlite3_errmsg(db) << endl;
+        sqlite3_close(db);
+        return exit;
+    }
 
+    // search INSTRUCTOR table if not found in STUDENT table
+    if (exit == SQLITE_OK) {
+        query = "SELECT ID, firstName, lastName, password FROM INSTRUCTOR WHERE ID=" + ID + " AND password='" + password + "'";
+        exit = sqlite3_exec(db, query.c_str(), callback2, (void*)"INSTRUCTOR", nullptr);
+        if (exit != SQLITE_OK) {
+            cout << "Error executing query for INSTRUCTOR table: " << sqlite3_errmsg(db) << endl;
+            sqlite3_close(db);
+            return exit;
+        }
+    }
 
+    // search ADMIN table if not found in either
+    if (exit == SQLITE_OK) {
+        query = "SELECT ID, firstName, lastName, password FROM ADMIN WHERE ID=" + ID + " AND password='" + password + "'";
+        exit = sqlite3_exec(db, query.c_str(), callback2, (void*)"ADMIN", nullptr);
+        if (exit != SQLITE_OK) {
+            cout << "Error executing query for ADMIN table: " << sqlite3_errmsg(db) << endl;
+            sqlite3_close(db);
+            return exit;
+        }
+    }
+    // -------------------------------------------- [END] LOG IN --------------------------------------------
 
 
     // --------------------------------------------- ASSIGNMENT 3 ---------------------------------------------
@@ -103,7 +169,7 @@ int main() {
             //  SQL query
             string searchQuery = "SELECT * FROM " + tableName + " WHERE PARAMETER='" + parameter + "';";
             //  execute search
-            exit = sqlite3_exec(db, searchQuery.c_str(), callback, 0, &messageError);
+            exit = sqlite3_exec(db, searchQuery.c_str(), callback1, 0, &messageError);
             if (exit != SQLITE_OK) {
                 cout << "Error searching for records." << endl;
                 sqlite3_free(messageError);
@@ -121,7 +187,7 @@ int main() {
             //  SQL query to insert the record
             string insertQuery = "INSERT INTO " + tableName + " VALUES (...);";
             //  execute insert
-            exit = sqlite3_exec(db, insertQuery.c_str(), callback, 0, &messageError);
+            exit = sqlite3_exec(db, insertQuery.c_str(), callback1, 0, &messageError);
             if (exit != SQLITE_OK) {
                 cout << "Error inserting new record." << endl;
                 sqlite3_free(messageError);
@@ -137,7 +203,7 @@ int main() {
             //  SQL query to retrieve all table records
             string selectQuery = "SELECT * FROM " + tableName + ";";
             //  Execute the select query
-            exit = sqlite3_exec(db, selectQuery.c_str(), callback, 0, &messageError);
+            exit = sqlite3_exec(db, selectQuery.c_str(), callback1, 0, &messageError);
             if (exit != SQLITE_OK) {
                 cout << "Error retrieving records from the table." << endl;
                 sqlite3_free(messageError);
@@ -234,7 +300,7 @@ int main() {
 
         // search and display instructors for each course
         string selectCoursesQuery = "SELECT * FROM COURSES;";
-        exit = sqlite3_exec(db, selectCoursesQuery.c_str(), callback, 0, &messageError);
+        exit = sqlite3_exec(db, selectCoursesQuery.c_str(), callback1, 0, &messageError);
         if (exit != SQLITE_OK) {
             cout << "Error retrieving courses." << endl;
             sqlite3_free(messageError);

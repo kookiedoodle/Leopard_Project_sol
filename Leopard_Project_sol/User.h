@@ -1,7 +1,13 @@
 #pragma once
 #include <string>
 #include <iostream>
+#include "sqlite3.h"
 
+sqlite3* db;
+char* messageError;
+char* errorMessage;
+
+int exit;
 using std::string;
 using std::cout;
 using std::cin;
