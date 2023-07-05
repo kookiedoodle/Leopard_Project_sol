@@ -1,9 +1,6 @@
 #include<string>
 #include "User.h"
 
-using std::string;
-
-
 class Instructor :
 	public User
 {

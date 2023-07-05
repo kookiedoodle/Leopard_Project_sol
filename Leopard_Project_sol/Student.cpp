@@ -2,10 +2,6 @@
 #include <iostream>
 #include <string>
 
-
-using std::string;
-using std::cout;
-
 string name;
 string first_name;
 string last_name;
@@ -27,13 +23,13 @@ Student::Student(string in_first_name, string in_last_name, int in_ID) {
 
 
 //method
-string Student::search_course(string in_course_name) {
+string Student::search_course(string in_course_name) {  // work on this!!!!
     return placeholder;
 }
-void Student::add_course(int in_CRN) {
+void Student::add_course(int in_CRN) {  // work on this!!!!
 
 }
-void Student::drop_course(int in_CRN) {
+void Student::drop_course(int in_CRN) {  // work on this!!!!
 
 }
 string Student::display_schedule() {

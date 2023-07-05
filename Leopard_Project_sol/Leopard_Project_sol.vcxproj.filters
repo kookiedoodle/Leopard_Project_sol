@@ -30,6 +30,9 @@
     <ClCompile Include="Instructor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="displays.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Admin.h">
@@ -45,6 +48,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sqlite3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="displays.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

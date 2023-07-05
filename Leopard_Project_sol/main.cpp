@@ -2,16 +2,13 @@
 #include "Instructor.h"
 #include "Admin.h"
 #include "User.h"
+#include "displays.h"
 #include "sqlite3.h"
 
 #include <iostream>
 #include <string>
 #include <stdio.h>
 
-using std::cin;
-using std::cout;
-using std::string;
-using std::endl;
 
 // callback function for SQLite
 static int callback(void* data, int argc, char** argv, char** azColName)
@@ -29,7 +26,7 @@ int main() {
     sqlite3* db;
     char* messageError;
 
-    int exit;  //  sql exit code
+    int exit;  // sql exit code
     int choice = 0;  // general variable declaration
     int select = 0;
     int ID = 0;
@@ -40,13 +37,20 @@ int main() {
     // person type specfic variables
     // create fill in
 
-    // open the database
+    // open the database, *match* to database close (*)
     exit = sqlite3_open("leopardDatabase.db", &db);
     if (exit != SQLITE_OK) {
         cout << "Error opening the database." << endl;
         return 1;
     }
 
+
+
+
+
+
+    // --------------------------------------------- ASSIGNMENT 3 ---------------------------------------------
+    /*
     // create the COURSES table
     string table = "CREATE TABLE COURSES("
         "CRN INTEGER PRIMARY KEY, "
@@ -60,7 +64,7 @@ int main() {
 
     exit = sqlite3_exec(db, table.c_str(), NULL, 0, &messageError);
     if (exit != SQLITE_OK) {
-        cout << "Error creating the table." << endl;
+        cout << "Error creating the table." << endl;  // error message
         sqlite3_free(messageError);
         return 1;
     }
@@ -82,17 +86,9 @@ int main() {
         return 1;
     }
 
-    // MENU
+    // ------------------------------------- MENU for assignment 3 ----------------------------------------
     while (choice != 7) {
-        cout << "========== MENU ==========" << endl;
-        cout << "1. Search for records" << endl;
-        cout << "2. Insert new records" << endl;
-        cout << "3. Print all records from a table" << endl;
-        cout << "4. Create a table" << endl;
-        cout << "5. Update existing records" << endl;
-        cout << "6. Remove records from the database" << endl;
-        cout << "7. Exit" << endl;
-        cout << "Enter your choice: ";
+        assign3();  // print menu for assignment 3 options
         cin >> choice;
 
         switch (choice) {
@@ -245,8 +241,10 @@ int main() {
         }
 
     }
+    */
+    // DELETE TO UNCOMMENT ASSIGNMENT 3
 
-    sqlite3_close(db);
+    sqlite3_close(db);  // *match* to database open (*)
 
     return 0;
 }
