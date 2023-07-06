@@ -7,7 +7,7 @@ sqlite3* db;
 char* messageError;
 char* errorMessage;
 
-int exit;
+using std::string;
 using std::string;
 using std::cout;
 using std::cin;

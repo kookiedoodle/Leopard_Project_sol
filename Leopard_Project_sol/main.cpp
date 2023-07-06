@@ -55,7 +55,7 @@ static int callback2(void* data, int argc, char** argv, char** azColName)
 
 int main() {
 
-    int exit;  // sql exit code
+    int exit;  // exit sqlite value
     int choice = 0;  // general variable declaration
     int select = 0;
     int ID = 0;
