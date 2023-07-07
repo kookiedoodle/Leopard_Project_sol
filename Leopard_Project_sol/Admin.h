@@ -1,6 +1,6 @@
 #pragma once
 #include "User.h"
-#include<string>
+#include <string>
 
 using std::string;
 

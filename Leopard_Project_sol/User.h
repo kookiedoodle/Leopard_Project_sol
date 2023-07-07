@@ -3,15 +3,12 @@
 #include <iostream>
 #include "sqlite3.h"
 
-sqlite3* db;
-char* messageError;
-char* errorMessage;
-
-using std::string;
 using std::string;
 using std::cout;
 using std::cin;
 using std::endl;
+
+using namespace std;
 
 
 class User
@@ -31,7 +28,7 @@ public:
 	//method
 	void print_info();  // print id and name
 
-	//destreuctor (delete)
+	//destructor (delete)
 	~User();
 
 };

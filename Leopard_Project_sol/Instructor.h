@@ -21,7 +21,7 @@ public:
 	string print_schedule();
 	string print_class_list();
 
-	//destreuctor (delete)
+	//destructor (delete)
 	~Instructor();
 
 };

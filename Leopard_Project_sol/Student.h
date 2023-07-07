@@ -1,8 +1,8 @@
 #include<string>
 #include "User.h"
 
-
 using std::string;
+extern char* errorMessage;
 
 
 class Student :

@@ -24,7 +24,7 @@ void User::print_info() {
 	cout << last_name << ", " << first_name << endl; //  print last_name, first_name ex. "Arpino, Katherine"
 }
 
-//destreuctor (delete)
+//destructor (delete)
 User::~User() {
 
 }

@@ -24,6 +24,8 @@ Student::Student(string in_first_name, string in_last_name, int in_ID) {
 
 //method
 string Student::search_course(string& col, string& parameter) {  // search via parameter
+    char* errorMessage = nullptr;
+    sqlite3* db;
     // open DB
     int exit = sqlite3_open("leopardDatabase.db", &db);
     if (exit != SQLITE_OK) {
@@ -69,7 +71,7 @@ string Student::display_schedule() {
     return placeholder;
 }
 
-//destreuctor (delete)
+//destructor (delete)
 Student::~Student() {
 
 }

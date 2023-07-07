@@ -33,6 +33,9 @@
     <ClCompile Include="displays.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="assign3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Admin.h">
