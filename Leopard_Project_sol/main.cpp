@@ -12,48 +12,148 @@
 using namespace std;
 
 // callback function for SQLite
-static int login(void* data, int argc, char** argv, char** azColName)
-{
-    // retrieve ID and password from the correct row
-    int id = atoi(argv[0]);  // convert retreieved string to integer ID
+static int login(void* data, int argc, char** argv, char** azColName) {
+    string userType = static_cast<const char*>(data);
+    User* user = nullptr;
 
-    // Check the table name provided in the data pointer
-    string tableName = static_cast<const char*>(data);
-    if (tableName == "STUDENT") {  // if table is student, proceed to create student user
-        string firstName = argv[1]; // gathers firstName from column 2 of database
-        string lastName = argv[2];  // gathers lastName from column 3 of database
-        cout << "Hello " << lastName << ", " << firstName << endl << id << endl;  // hello ____ (confirms person located)
-        User* student = new User(firstName, lastName, id);  // created student user object
-    }
-    else if (tableName == "INSTRUCTOR") {
-        string firstName = argv[1];
-        string lastName = argv[2];
-        cout << "Hello " << lastName << ", " << firstName << endl << id << endl;
-        User* instructor = new User(firstName, lastName, id);
-    }
-    else if (tableName == "ADMIN") {
-        string firstName = argv[1];
-        string lastName = argv[2];
-        cout << "Hello " << lastName << ", " << firstName << endl << id << endl;
-        User* admin = new User(firstName, lastName, id);
+    // Assuming the query returns only one row
+    if (argc == 3) {
+        string id = argv[0] ? argv[0] : "";
+        string name = argv[1] ? argv[1] : "";
+        string surname = argv[2] ? argv[2] : "";
+
+        if (userType == "STUDENT") {
+            Student* studentUser = new Student();
+            studentUser->first_name = name;
+            studentUser->last_name = surname;
+            studentUser->ID = stoi(id);
+            user = studentUser;
+        }
+        else if (userType == "INSTRUCTOR") {
+            Instructor* instructorUser = new Instructor();
+            instructorUser->first_name = name;
+            instructorUser->last_name = surname;
+            instructorUser->ID = stoi(id);
+            user = instructorUser;
+        }
+        else if (userType == "ADMIN") {
+            Admin* adminUser = new Admin();
+            adminUser->first_name = name;
+            adminUser->last_name = surname;
+            adminUser->ID = stoi(id);
+            user = adminUser;
+        }
+        if (user) {  // confirm user is created by printing their information
+            cout << "Logged in as: " << userType << endl;
+            cout << "ID: " << user->ID << endl;
+            cout << "First Name: " << user->first_name << endl;
+            cout << "Last Name: " << user->last_name << endl;
+        }
     }
 
     return 0;
 }
 
+int performLogin(sqlite3* db, const string& username, int ID) {
+    int exit;
+    int key = 0;  // key provided after ID retrieved
+
+    // Search query for the STUDENT table to retrieve student's ID, name, and last name
+    string query = "SELECT ID, NAME, SURNAME FROM STUDENT WHERE EMAIL='" + username + "' AND ID='" + to_string(ID) + "'";
+    exit = sqlite3_exec(db, query.c_str(), login, (void*)"STUDENT", nullptr);
+    if (exit != SQLITE_OK) {
+        cout << "Error executing query for STUDENT table: " << sqlite3_errmsg(db) << endl;
+        return exit;
+    }
+    else {
+        key = 1;  // Student authorization
+    }
+
+    // Search INSTRUCTOR table for information if not found in STUDENT table
+    if (exit == SQLITE_OK) {
+        query = "SELECT ID, NAME, SURNAME FROM INSTRUCTOR WHERE EMAIL='" + username + "' AND ID='" + to_string(ID) + "'";
+        exit = sqlite3_exec(db, query.c_str(), login, (void*)"INSTRUCTOR", nullptr);
+        if (exit != SQLITE_OK) {
+            cout << "Error executing query for INSTRUCTOR table: " << sqlite3_errmsg(db) << endl;
+            return exit;
+        }
+        else {
+            key = 2;  // Instructor authorization
+        }
+    }
+
+    // Search ADMIN table if not found in either
+    if (exit == SQLITE_OK) {
+        query = "SELECT ID, NAME, SURNAME FROM ADMIN WHERE EMAIL='" + username + "' AND ID='" + to_string(ID) + "'";
+        exit = sqlite3_exec(db, query.c_str(), login, (void*)"ADMIN", nullptr);
+        if (exit != SQLITE_OK) {
+            cout << "Error executing query for ADMIN table: " << sqlite3_errmsg(db) << endl;
+            return exit;
+        }
+        else {
+            key = 3;  // Admin authorization
+        }
+    }
+
+    return key;
+}
+
+// ------------------------------------------------ !!!!!! EDIT ------------------------------------
+void searchCourseCRN(int studentID, int courseCRN)
+{
+    int exit;
+    sqlite3* db;
+
+    // Prepare the SQL statement
+    sqlite3_stmt* stmt;
+    string query = "SELECT COURSE_1, COURSE_2, COURSE_3, COURSE_4, COURSE_5 FROM STUDENT WHERE ID = ?";
+    exit = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
+    if (exit != SQLITE_OK) {
+        cout << "Error preparing SQL statement: " << sqlite3_errmsg(db) << endl;
+        return;
+    }
+    // Bind the student ID parameter
+    exit = sqlite3_bind_int(stmt, 1, studentID);
+    if (exit != SQLITE_OK) {
+        cout << "Error binding student ID parameter: " << sqlite3_errmsg(db) << endl;
+        sqlite3_finalize(stmt);
+        return;
+    }
+
+    // Execute the query and process the results
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        // Check each column for the course CRN
+        for (int i = 0; i < 5; ++i) {
+            int columnCRN = sqlite3_column_int(stmt, i);
+            if (columnCRN == courseCRN) {
+                cout << "Course CRN " << courseCRN << " found in column: COURSE_" << (i + 1) << endl;
+            }
+        }
+    }
+
+    // Finalize the statement
+    sqlite3_finalize(stmt);
+}
+
+// ------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------- MAIN CODE ------------
+// ------------------------------------------------------------------------------------------
+
 int main() {
+
     sqlite3* db;
     int exit;  // exit sqlite value
+    int exitMenu;
     int ID = 0;  // id and password varaible (password is ID)
     string username;  // email without email extention
     string first_name;
     string last_name;
+    int CRN;
     int option = 0;  // menu option selection variable
+    int loop = 0;
 
     int key = 0;  // key provided after ID retrieved 
 
-    // person type specfic variables
-    // create fill in
     cout << "Connecting to Database . . ." << endl;
     // open the database, *match* to database close (*)
     exit = sqlite3_open("leopardDatabase.db", &db);
@@ -65,71 +165,70 @@ int main() {
         cout << "Database Connected.\n\n";  // confirm database connection
     }
 
-    // ------------------------------------------ [START] LOG IN --------------------------------------------
+    // -------------------------------------------------------------- LOG IN
     // get ID and password from user
     cout << "Enter ID (email name): ";
     cin >> username;
     cout << "Enter Password (user ID): ";
     cin >> ID;
+    key = performLogin(db, username, ID);  // perform login process and create user
 
-    // search query for the STUDENT table to retrieve student's id, name, lastname
-    string query = "SELECT ID, NAME, SURNAME FROM STUDENT WHERE EMAIL='" + username + "' AND ID='" + to_string(ID) + "'";
-    exit = sqlite3_exec(db, query.c_str(), login, (void*)"STUDENT", nullptr);
-    if (exit != SQLITE_OK) {
-        cout << "Error executing query for STUDENT table: " << sqlite3_errmsg(db) << endl;
-        sqlite3_close(db);
-        return exit;
-    }
-    else {
-        key = 1;  // student authorization
-    }
+    Student studentUser;
+    int S_userID = studentUser.returnID();  // id variable
+    string S_firstName = studentUser.returnFN();  // first name variable
+    string S_lastName = studentUser.returnLN();  // last name
 
-    // search INSTRUCTOR table for information if not found in STUDENT table
-    if (exit == SQLITE_OK) {
-        query = "SELECT ID, NAME, SURNAME FROM INSTRUCTOR WHERE EMAIL='" + username + "' AND ID='" + to_string(ID) + "'";
-        exit = sqlite3_exec(db, query.c_str(), login, (void*)"INSTRUCTOR", nullptr);
-        if (exit != SQLITE_OK) {
-            cout << "Error executing query for INSTRUCTOR table: " << sqlite3_errmsg(db) << endl;
-            sqlite3_close(db);
-            return exit;
-        }
-        else {
-            key = 2;  // instructor authorization
-        }
-    }
+    Instructor instructorUser;
+    int I_userID = instructorUser.returnID();  // id variable
+    string I_firstName = instructorUser.returnFN();  // first name variable
+    string I_lastName = instructorUser.returnLN();  // last name
 
-    // search ADMIN table if not found in either
-    if (exit == SQLITE_OK) {
-        query = "SELECT ID, NAME, SURNAME FROM ADMIN WHERE EMAIL='" + username + "' AND ID='" + to_string(ID) + "'";
-        exit = sqlite3_exec(db, query.c_str(), login, (void*)"ADMIN", nullptr);
-        if (exit != SQLITE_OK) {
-            cout << "Error executing query for ADMIN table: " << sqlite3_errmsg(db) << endl;
-            sqlite3_close(db);
-            return exit;
-        }
-        else {
-            key = 3;  // admin authorization
-        }
-    }
-    // -------------------------------------------- [END] LOG IN --------------------------------------------
+    Student adminUser;
+    int A_userID = adminUser.returnID();  // id variable
+    string A_firstName = adminUser.returnFN();  // first name variable
+    string A_lastName = adminUser.returnLN();  // last name
 
-    cout << ">> ";
-    cin >> key;  // TEMPORARY test variable, key will be assigned depending on user class
-    switch (key) {
+    switch (key) {  // depending on usertype, enter into options menu
     case 1:  // ---------------- STUDENT ----------------
         // way to loop back to menu and cin >> option within each function
-        menuS();  // print menu for student functions thru displays.cpp
-        cin >> option;
-        switch (option) {
-        case 1:  // search course list
-            break;
-        case 2:  // add/drop courses
-            break;
-        case 3:  // print schedule
-            break;
-        case 0:  // logout
-            break;
-        }
+        while (exitMenu != 1) {  // allow multiple menu selections and exit when you wish
+            menuS();  // print menu for student functions thru displays.cpp
+            cin >> option;
+            switch (option) {
+            case 1:  // ---------------------- SEARCH course list
+                studentUser.search_course();
+                break;
+            case 2:  // ---------------------- ADD/DROP courses
+                loop = 1;
+                while (loop == 1) {  // keep editing
+                    cout << "\n[0] EXIT TO MAIN PAGE\nAdd Course From Schedule";
+                    cout << "\nEnter Course CRN: ";
+                    cin >> CRN;  // gather desired CRN from user or 0 to exit
+                    if (CRN == 0) {
+                        return;  // if user wants to exit course editing break out of case statement
+                    }
+                    cout << "Would you like to add or drop this course?\n[1] ADD [2] DROP";
+                    cin >> option;
+                    switch (option) {
+                    case 1:  // ---------------------- ADD course
+                        studentUser.add_course(db, S_userID, CRN);
+                        break;
+                    case 2:  // ---------------------- DROP course
+                        studentUser.drop_course(db, S_userID, CRN);
+                        break;
+                    }
+                    cout << "\n\nContinue Editing? [1] Stay [0] Return To Main Menu\n\n>> ";
+                    cin >> loop;  // loop for editing courses
+                }  // while loop
+                break;
+            case 3:  // print schedule
+                studentUser.print_schedule(S_userID);  // carryout print schedule function
+                break;
+            case 0:  // logout
+                exitMenu = 1;  // set exitMenu to exit
+                break;
+            }
+        }  // while exitMenu != 1
         break;
     case 2:  // ---------------- INSTRUCTOR ----------------
         menuI();  // print menu for instructor functions

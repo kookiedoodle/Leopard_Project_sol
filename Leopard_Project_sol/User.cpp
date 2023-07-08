@@ -24,6 +24,18 @@ void User::print_info() {
 	cout << last_name << ", " << first_name << endl; //  print last_name, first_name ex. "Arpino, Katherine"
 }
 
+int User::returnID() {
+	return ID;
+}
+
+string User::returnFN() {
+	return first_name;
+}
+
+string User::returnLN() {
+	return last_name;
+}
+
 //destructor (delete)
 User::~User() {
 

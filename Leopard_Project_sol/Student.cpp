@@ -1,4 +1,5 @@
 #include "Student.h"
+#include "displays.h"
 #include <iostream>
 #include <string>
 
@@ -22,8 +23,8 @@ Student::Student(string in_first_name, string in_last_name, int in_ID) {
 }
 
 
-// ------------------------------ SEARCH COURSES ------------------------------
-string Student::search_course(string& col, string& parameter) {  // search via parameter
+// ------------------------------------------------------------ SEARCH COURSES 
+string Student::search_course() {  // search via parameter
     char* errorMessage = nullptr;
     sqlite3* db;
     // open DB
@@ -31,6 +32,36 @@ string Student::search_course(string& col, string& parameter) {  // search via p
     if (exit != SQLITE_OK) {
         result = "Error opening the database.";
         return result;
+    }
+
+    int choice;
+    string col;
+    string parameter;
+
+    cout << "Enter A Filter To Search Courses By:" << endl;
+    cout << "1. 'CRN'\n2. 'DEPT'\n3. 'DOTW'\n4. 'SEMESTER'\nFilter: ";
+    cin >> choice;
+    switch (choice) {
+    case 1:  // search by CRN
+        col = "CRN";  // assign column
+        cout << "\nEnter Course CRN [101, 141, 211, 231, 331, 501, 601]: ";
+        cin >> parameter;  // assign parameter
+        break;
+    case 2:  // search by crn
+        col = "DEPT";
+        cout << "\nEnter Department Abbreviation [BSEE, BSCO, BSAS, HUSS]: ";
+        cin >> parameter;
+        break;
+    case 3:  // search by dotw
+        col = "DOTW";
+        cout << "\nEnter The First Letter Weekday [M,T,W,R,F]: ";
+        cin >> parameter;
+        break;
+    case 4:  // search by semester
+        col = "SEMESTER";
+        cout << "\nEnter A Semester [SPR, SUM, FAL]: ";
+        cin >> parameter;
+        break;
     }
 
     // search course given column name and parameter to search (ex. search course provided CRN number)
@@ -47,31 +78,89 @@ string Student::search_course(string& col, string& parameter) {  // search via p
 
     // Check for errors
     if (exit != SQLITE_OK) {
-        result = "Error executing the search command.";
+        result = "\nCOURSE NOT FOUND.";
     }
 
-    // close DB
-    sqlite3_close(db);
+    sqlite3_close(db);  // close DB
 
     return result;
 }
 
-// ------------------------------ ADD COURSES ------------------------------
-void Student::add_course(int in_CRN, string blockPeriod) {  // work on this!!!!
-    // to add course, we must have the student's ID,
-    // have user give a block period they want the class in,
-    // go to user that matches ID#, insert CRN code into specfic block
+// ------------------------------------------------------------ ADD COURSES 
+void Student::add_course(sqlite3* db, int userID, int courseCRN) {
+    // begin creating SQL statement to update the course col
+    std::string sql = "UPDATE STUDENT SET ";
+
+    // building SET clause to remove the course CRN from the correct col
+    for (int i = 1; i <= 5; ++i) {
+        string columnName = "COURSE_" + std::to_string(i);
+        sql += columnName + " = CASE WHEN " + columnName + " IS NULL THEN " + std::to_string(courseCRN) +
+            " ELSE " + columnName + " END";
+
+        if (i != 5) {  // separate unless last item
+            sql += ", ";
+        }
+    }
+
+    // only update row with the matching user ID
+    sql += " WHERE ID = " + std::to_string(userID);
+
+    // confirm desired course  deletion
+    cout << "Confirm Addition of Course " << courseCRN << endl;
+    cout << "[1] CONFIRM ADDITION [2] CANCEL ADDITION";
+    cin >> option;
+    if (option == 1) {  // confirm addition and carry out command
+        int exit = sqlite3_exec(db, sql.c_str(), nullptr, nullptr, nullptr);
+    }
+
+    if (exit != SQLITE_OK) {
+        std::cout << "Error executing SQL statement: " << sqlite3_errmsg(db) << std::endl;
+    }
+    else {
+        std::cout << "Course " << courseCRN << " added to schedule." << std::endl;
+    }
 }
 
-// ------------------------------ DROP COURSES ------------------------------
-void Student::drop_course(int in_CRN) {
-    // Implementation for dropping a course from the student's schedule
+// ------------------------------------------------------------ DROP COURSES 
+void Student::drop_course(sqlite3* db, int userID, int courseCRN) {
+    // begin creating SQL statement to update the course col
+    string sql = "UPDATE STUDENT SET ";
+
+    // building SET clause to remove the course CRN from the correct col
+    for (int i = 1; i <= 5; ++i) {
+        string columnName = "COURSE_" + to_string(i);
+        sql += columnName + " = CASE WHEN " + columnName + " = " + to_string(courseCRN) +
+            " THEN NULL ELSE " + columnName + " END";
+
+        if (i != 5) {  // seperate unless last item
+            sql += ", ";
+        }
+    }
+
+    // only update row with the matching user ID
+    sql += " WHERE ID = " + to_string(userID);
+
+    // confirm desired course deletion
+    cout << "Confirm Deletion of Course " << courseCRN << endl;
+    cout << "[1] CONFIRM DELETION [2] CANCEL DELETION";
+    cin >> option;
+    if (option == 1) {  // confirm deletion and carry out command
+        int exit = sqlite3_exec(db, sql.c_str(), nullptr, nullptr, nullptr);
+    }
+
+    if (exit != SQLITE_OK) {
+        cout << "Error executing SQL statement: " << sqlite3_errmsg(db) << endl;
+    }
+    else {
+        cout << "Course " << courseCRN << " removed from schedule." << endl;
+    }
 }
 
-int Student::print_schedule(int userID) {
+// ------------------------------------------------------------ PRINT SCHEDULE 
+int Student::print_schedule(int user_ID) {
     sqlite3* db;
     sqlite3_stmt* stmt;
-    int ID = userID;
+    int userID = user_ID;  // gather user's ID for searching courses
 
     string courses[5]; // 5 cell array to store the courses
 
@@ -92,12 +181,12 @@ int Student::print_schedule(int userID) {
     }
 
     // bind ID parameter to '?' in statement sql above
-    sqlite3_bind_int(stmt, 1, ID);
+    sqlite3_bind_int(stmt, 1, userID);
 
     // execute statement
     exit = sqlite3_step(stmt);
     if (exit != SQLITE_ROW) {  // ID not found
-        cout << "No matching student found with ID: " << ID << endl;
+        cout << "No matching student found with ID: " << userID << endl;
         sqlite3_finalize(stmt);
         sqlite3_close(db);
         return exit;

@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 #include "sqlite3.h"
+#include <cctype>
 
 using std::string;
 using std::cout;
@@ -27,6 +28,9 @@ public:
 
 	//method
 	void print_info();  // print id and name
+	int returnID();
+	string returnFN();
+	string returnLN();
 
 	//destructor (delete)
 	~User();
