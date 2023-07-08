@@ -25,7 +25,7 @@ public:
 	string search_course(string& col, string& parameter);
 	void add_course(int in_CRN, string blockPeriod);
 	void drop_course(int in_CRN);
-	string display_schedule();
+	int print_schedule(int userID);
 
 	//destructor (delete)
 	~Student();

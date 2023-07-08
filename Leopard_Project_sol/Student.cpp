@@ -68,9 +68,55 @@ void Student::drop_course(int in_CRN) {
     // Implementation for dropping a course from the student's schedule
 }
 
-string Student::display_schedule() {
-    // Implementation for displaying the student's schedule
-    return placeholder;
+int Student::print_schedule(int userID) {
+    sqlite3* db;
+    sqlite3_stmt* stmt;
+    int ID = userID;
+
+    string courses[5]; // 5 cell array to store the courses
+
+    // open database connection
+    int exit = sqlite3_open("leopardDatabase.db", &db);
+    if (exit != SQLITE_OK) {
+        cout << "Cannot open database: " << sqlite3_errmsg(db) << endl;
+        return exit;
+    }
+
+    // SQL statement to get courses from matched ID profile
+    string sql = "SELECT COURSE_1, COURSE_2, COURSE_3, COURSE_4, COURSE_5 FROM STUDENT WHERE ID = ?";
+    exit = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, NULL);  // prepare statement
+    if (exit != SQLITE_OK) {  // failed SQL msg
+        cout << "Failed to prepare SQL statement: " << sqlite3_errmsg(db) << endl;
+        sqlite3_close(db);
+        return exit;
+    }
+
+    // bind ID parameter to '?' in statement sql above
+    sqlite3_bind_int(stmt, 1, ID);
+
+    // execute statement
+    exit = sqlite3_step(stmt);
+    if (exit != SQLITE_ROW) {  // ID not found
+        cout << "No matching student found with ID: " << ID << endl;
+        sqlite3_finalize(stmt);
+        sqlite3_close(db);
+        return exit;
+    }
+
+    // go over columns 6 through 10 (COURSE_1 to COURSE_5) and upload to courses array
+    for (int i = 6; i < 11; ++i) {
+        const unsigned char* course = sqlite3_column_text(stmt, i);
+        courses[i - 5] = string(reinterpret_cast<const char*>(course));  // translate gathered information and upload to courses
+    }
+
+    for (int i = 0; i < 5; ++i) {  // print schedule starting at COURSE_1
+        cout << "COURSE " << (i + 1) << ": " << courses[i] << endl;
+    }
+
+    sqlite3_finalize(stmt);  // finalize statement
+    sqlite3_close(db);  // close DB connection
+
+    return SQLITE_OK;
 }
 
 //destructor (delete)
