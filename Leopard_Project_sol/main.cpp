@@ -16,26 +16,25 @@ static int login(void* data, int argc, char** argv, char** azColName)
 {
     // retrieve ID and password from the correct row
     int id = atoi(argv[0]);  // convert retreieved string to integer ID
-    string password = argv[3];  // retrive password
 
     // Check the table name provided in the data pointer
     string tableName = static_cast<const char*>(data);
-    if (tableName == "STUDENT") {
-        // Create a Student object
-        string firstName = argv[1];
-        string lastName = argv[2];
-        User* student = new User(firstName, lastName, id);  // created student user
+    if (tableName == "STUDENT") {  // if table is student, proceed to create student user
+        string firstName = argv[1]; // gathers firstName from column 2 of database
+        string lastName = argv[2];  // gathers lastName from column 3 of database
+        cout << "Hello " << lastName << ", " << firstName << endl << id << endl;  // hello ____ (confirms person located)
+        User* student = new User(firstName, lastName, id);  // created student user object
     }
     else if (tableName == "INSTRUCTOR") {
-        // Create an Instructor object
         string firstName = argv[1];
         string lastName = argv[2];
+        cout << "Hello " << lastName << ", " << firstName << endl << id << endl;
         User* instructor = new User(firstName, lastName, id);
     }
     else if (tableName == "ADMIN") {
-        // Create an Admin object
         string firstName = argv[1];
         string lastName = argv[2];
+        cout << "Hello " << lastName << ", " << firstName << endl << id << endl;
         User* admin = new User(firstName, lastName, id);
     }
 
@@ -65,16 +64,16 @@ int main() {
     else {
         cout << "Database Connected.\n\n";  // confirm database connection
     }
-    /*
+
     // ------------------------------------------ [START] LOG IN --------------------------------------------
-    // Get the ID and password from the user
+    // get ID and password from user
     cout << "Enter ID (email name): ";
     cin >> username;
     cout << "Enter Password (user ID): ";
     cin >> ID;
 
-    // Execute the query for the STUDENT table
-    string query = "SELECT ID, NAME, SURNAME FROM STUDENT WHERE EMAIL=" + username + " AND ID='" + to_string(ID) + "'";
+    // search query for the STUDENT table to retrieve student's id, name, lastname
+    string query = "SELECT ID, NAME, SURNAME FROM STUDENT WHERE EMAIL='" + username + "' AND ID='" + to_string(ID) + "'";
     exit = sqlite3_exec(db, query.c_str(), login, (void*)"STUDENT", nullptr);
     if (exit != SQLITE_OK) {
         cout << "Error executing query for STUDENT table: " << sqlite3_errmsg(db) << endl;
@@ -82,12 +81,12 @@ int main() {
         return exit;
     }
     else {
-        key = 1; // student authorization
+        key = 1;  // student authorization
     }
 
-    // search INSTRUCTOR table if not found in STUDENT table
+    // search INSTRUCTOR table for information if not found in STUDENT table
     if (exit == SQLITE_OK) {
-        query = "SELECT ID, NAME, SURNAME FROM INSTRUCTOR WHERE EMAIL=" + username + " AND ID='" + to_string(ID) + "'";
+        query = "SELECT ID, NAME, SURNAME FROM INSTRUCTOR WHERE EMAIL='" + username + "' AND ID='" + to_string(ID) + "'";
         exit = sqlite3_exec(db, query.c_str(), login, (void*)"INSTRUCTOR", nullptr);
         if (exit != SQLITE_OK) {
             cout << "Error executing query for INSTRUCTOR table: " << sqlite3_errmsg(db) << endl;
@@ -101,7 +100,7 @@ int main() {
 
     // search ADMIN table if not found in either
     if (exit == SQLITE_OK) {
-        query = "SELECT ID, NAME, SURNAME FROM ADMIN WHERE EMAIL=" + username + " AND ID='" + to_string(ID) + "'";
+        query = "SELECT ID, NAME, SURNAME FROM ADMIN WHERE EMAIL='" + username + "' AND ID='" + to_string(ID) + "'";
         exit = sqlite3_exec(db, query.c_str(), login, (void*)"ADMIN", nullptr);
         if (exit != SQLITE_OK) {
             cout << "Error executing query for ADMIN table: " << sqlite3_errmsg(db) << endl;
@@ -113,7 +112,7 @@ int main() {
         }
     }
     // -------------------------------------------- [END] LOG IN --------------------------------------------
-    */
+
     cout << ">> ";
     cin >> key;  // TEMPORARY test variable, key will be assigned depending on user class
     switch (key) {

@@ -27,7 +27,7 @@ public:
 	void drop_course(int in_CRN);
 	string display_schedule();
 
-	//destreuctor (delete)
+	//destructor (delete)
 	~Student();
 
 };
