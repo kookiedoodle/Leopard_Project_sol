@@ -22,7 +22,7 @@ Student::Student(string in_first_name, string in_last_name, int in_ID) {
 }
 
 
-//method
+// ------------------------------ SEARCH COURSES ------------------------------
 string Student::search_course(string& col, string& parameter) {  // search via parameter
     char* errorMessage = nullptr;
     sqlite3* db;
@@ -56,12 +56,14 @@ string Student::search_course(string& col, string& parameter) {  // search via p
     return result;
 }
 
+// ------------------------------ ADD COURSES ------------------------------
 void Student::add_course(int in_CRN, string blockPeriod) {  // work on this!!!!
     // to add course, we must have the student's ID,
     // have user give a block period they want the class in,
     // go to user that matches ID#, insert CRN code into specfic block
 }
 
+// ------------------------------ DROP COURSES ------------------------------
 void Student::drop_course(int in_CRN) {
     // Implementation for dropping a course from the student's schedule
 }
