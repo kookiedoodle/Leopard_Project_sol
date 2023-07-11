@@ -98,43 +98,6 @@ int performLogin(sqlite3* db, const string& username, int ID) {
     return key;
 }
 
-// ------------------------------------------------ !!!!!! EDIT ------------------------------------
-void searchCourseCRN(int studentID, int courseCRN)
-{
-    int exit;
-    sqlite3* db;
-
-    // Prepare the SQL statement
-    sqlite3_stmt* stmt;
-    string query = "SELECT COURSE_1, COURSE_2, COURSE_3, COURSE_4, COURSE_5 FROM STUDENT WHERE ID = ?";
-    exit = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
-    if (exit != SQLITE_OK) {
-        cout << "Error preparing SQL statement: " << sqlite3_errmsg(db) << endl;
-        return;
-    }
-    // Bind the student ID parameter
-    exit = sqlite3_bind_int(stmt, 1, studentID);
-    if (exit != SQLITE_OK) {
-        cout << "Error binding student ID parameter: " << sqlite3_errmsg(db) << endl;
-        sqlite3_finalize(stmt);
-        return;
-    }
-
-    // Execute the query and process the results
-    while (sqlite3_step(stmt) == SQLITE_ROW) {
-        // Check each column for the course CRN
-        for (int i = 0; i < 5; ++i) {
-            int columnCRN = sqlite3_column_int(stmt, i);
-            if (columnCRN == courseCRN) {
-                cout << "Course CRN " << courseCRN << " found in column: COURSE_" << (i + 1) << endl;
-            }
-        }
-    }
-
-    // Finalize the statement
-    sqlite3_finalize(stmt);
-}
-
 // ------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------- MAIN CODE ------------
 // ------------------------------------------------------------------------------------------
@@ -143,7 +106,7 @@ int main() {
 
     sqlite3* db;
     int exit;  // exit sqlite value
-    int exitMenu;
+    int exitMenu = 0;
     int ID = 0;  // id and password varaible (password is ID)
     string username;  // email without email extention
     string first_name;
@@ -205,7 +168,7 @@ int main() {
                     cout << "\nEnter Course CRN: ";
                     cin >> CRN;  // gather desired CRN from user or 0 to exit
                     if (CRN == 0) {
-                        return;  // if user wants to exit course editing break out of case statement
+                        break;  // if user wants to exit course editing break out of case statement
                     }
                     cout << "Would you like to add or drop this course?\n[1] ADD [2] DROP";
                     cin >> option;

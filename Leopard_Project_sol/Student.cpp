@@ -89,7 +89,8 @@ string Student::search_course() {  // search via parameter
 // ------------------------------------------------------------ ADD COURSES 
 void Student::add_course(sqlite3* db, int userID, int courseCRN) {
     // begin creating SQL statement to update the course col
-    std::string sql = "UPDATE STUDENT SET ";
+    int option;
+    string sql = "UPDATE STUDENT SET ";
 
     // building SET clause to remove the course CRN from the correct col
     for (int i = 1; i <= 5; ++i) {
@@ -195,7 +196,7 @@ int Student::print_schedule(int user_ID) {
     // go over columns 6 through 10 (COURSE_1 to COURSE_5) and upload to courses array
     for (int i = 6; i < 11; ++i) {
         const unsigned char* course = sqlite3_column_text(stmt, i);
-        courses[i - 5] = string(reinterpret_cast<const char*>(course));  // translate gathered information and upload to courses
+        courses[i - 6] = string(reinterpret_cast<const char*>(course));  // translate gathered information and upload to courses
     }
 
     for (int i = 0; i < 5; ++i) {  // print schedule starting at COURSE_1
