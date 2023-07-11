@@ -5,6 +5,8 @@ VisualStudioVersion = 17.3.32922.545
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Leopard_Project_sol", "Leopard_Project_sol\Leopard_Project_sol.vcxproj", "{FA346E4D-6632-4453-ADE6-7871E70C4E51}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Assignment 6 test", "Assignment 6 test\Assignment 6 test.vcxproj", "{C848A254-0E15-486B-AEAF-860BFE1E01AC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{FA346E4D-6632-4453-ADE6-7871E70C4E51}.Release|x64.Build.0 = Release|x64
 		{FA346E4D-6632-4453-ADE6-7871E70C4E51}.Release|x86.ActiveCfg = Release|Win32
 		{FA346E4D-6632-4453-ADE6-7871E70C4E51}.Release|x86.Build.0 = Release|Win32
+		{C848A254-0E15-486B-AEAF-860BFE1E01AC}.Debug|x64.ActiveCfg = Debug|x64
+		{C848A254-0E15-486B-AEAF-860BFE1E01AC}.Debug|x64.Build.0 = Debug|x64
+		{C848A254-0E15-486B-AEAF-860BFE1E01AC}.Debug|x86.ActiveCfg = Debug|Win32
+		{C848A254-0E15-486B-AEAF-860BFE1E01AC}.Debug|x86.Build.0 = Debug|Win32
+		{C848A254-0E15-486B-AEAF-860BFE1E01AC}.Release|x64.ActiveCfg = Release|x64
+		{C848A254-0E15-486B-AEAF-860BFE1E01AC}.Release|x64.Build.0 = Release|x64
+		{C848A254-0E15-486B-AEAF-860BFE1E01AC}.Release|x86.ActiveCfg = Release|Win32
+		{C848A254-0E15-486B-AEAF-860BFE1E01AC}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
