@@ -5,3 +5,7 @@ TEST(TestCaseName, TestName) {
   EXPECT_TRUE(true);
 }
 
+TEST(LoginTest, CorrectLogin) {
+	performLogin rTest{};
+	ASSERT_EQ(, rTest.key);
+}
