@@ -70,7 +70,7 @@ string Student::search_course() {  // search via parameter
     exit = sqlite3_exec(db, command.c_str(), [](void* data, int argc, char** argv, char** azColName) -> int {
         // search result output, printing column info currently
         for (int i = 0; i < argc; i++) {
-            std::cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL") << std::endl;
+            cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL") << std::endl;
         }
 
         return 0;
@@ -94,8 +94,8 @@ void Student::add_course(sqlite3* db, int userID, int courseCRN) {
 
     // building SET clause to remove the course CRN from the correct col
     for (int i = 1; i <= 5; ++i) {
-        string columnName = "COURSE_" + std::to_string(i);
-        sql += columnName + " = CASE WHEN " + columnName + " IS NULL THEN " + std::to_string(courseCRN) +
+        string columnName = "COURSE_" + to_string(i);
+        sql += columnName + " = CASE WHEN " + columnName + " IS NULL THEN " + to_string(courseCRN) +
             " ELSE " + columnName + " END";
 
         if (i != 5) {  // separate unless last item
@@ -104,7 +104,7 @@ void Student::add_course(sqlite3* db, int userID, int courseCRN) {
     }
 
     // only update row with the matching user ID
-    sql += " WHERE ID = " + std::to_string(userID);
+    sql += " WHERE ID = " + to_string(userID);
 
     // confirm desired course  deletion
     cout << "Confirm Addition of Course " << courseCRN << endl;
@@ -115,10 +115,10 @@ void Student::add_course(sqlite3* db, int userID, int courseCRN) {
     }
 
     if (exit != SQLITE_OK) {
-        std::cout << "Error executing SQL statement: " << sqlite3_errmsg(db) << std::endl;
+        cout << "Error executing SQL statement: " << sqlite3_errmsg(db) << endl;
     }
     else {
-        std::cout << "Course " << courseCRN << " added to schedule." << std::endl;
+        cout << "Course " << courseCRN << " added to schedule." << endl;
     }
 }
 
