@@ -5,7 +5,18 @@ TEST(TestCaseName, TestName) {
   EXPECT_TRUE(true);
 }
 
-TEST(LoginTest, CorrectLogin) {
-	performLogin rTest{};
-	ASSERT_EQ(, rTest.key);
+
+
+//TEST(LoginTest, CorrectLogin) {
+	//performLogin rTest{};
+	//ASSERT_EQ(, rTest.key);
+//}
+
+TEST(searchTest, AnalyzeSearch) {
+	search rtest{};
+	ASSERT_EQ( ,)
+}
+
+TEST(AddCourseTest, CorrectCourse) {
+	
 }
