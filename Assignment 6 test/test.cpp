@@ -7,16 +7,22 @@ TEST(TestCaseName, TestName) {
 
 
 
-//TEST(LoginTest, CorrectLogin) {
-	//performLogin rTest{};
-	//ASSERT_EQ(, rTest.key);
-//}
+TEST(LoginTest, CorrectLogin) {
+	performLogin studentTest{};
+	ASSERT_EQ(, );
+}
 
-TEST(searchTest, AnalyzeSearch) {
-	search rtest{};
-	ASSERT_EQ( ,)
+TEST(StudentTest, AnalyzeSearch) {
+	Student studentUsertest{ 101 };
+	ASSERT_EQ( Digital , studentUsertest.search_course());
 }
 
 TEST(AddCourseTest, CorrectCourse) {
-	
+	Student studentUsertest{ 10001, 101 };
+	ASSERT_EQ( , studentUsertest.add_course());
+}
+
+TEST(DropCourseTest, CorrectCourse) {
+	Student studentUsertest{ 10001, 101 };
+	ASSERT_EQ(, studentUsertest.drop_course());
 }
