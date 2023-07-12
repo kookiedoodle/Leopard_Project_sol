@@ -104,12 +104,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\arpin\OneDrive\Desktop\school\applied prog\Leopard_Project_sol\Leopard_Project_sol</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\ider\OneDrive - Wentworth Institute of Technology\ELEC 3225 Applied Programming Concepts\Leopard_project_2_VS\Leopard_Project_sol</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\arpin\OneDrive\Desktop\school\applied prog\Leopard_Project_sol\Leopard_Project_sol</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\ider\OneDrive - Wentworth Institute of Technology\ELEC 3225 Applied Programming Concepts\Leopard_project_2_VS\Leopard_Project_sol</AdditionalLibraryDirectories>
       <AdditionalDependencies>$(CoreLibraryDependencies);sqlite3.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
