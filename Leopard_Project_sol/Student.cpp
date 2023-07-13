@@ -10,9 +10,12 @@ int ID;
 
 //constructor (initial value)
 Student::Student() {
-    name = "N/A";
+    ID = 0000;
+    first_name = "GUEST";
+    last_name = "STUDENT";
 }
 Student::Student(string in_first_name, string in_last_name) {
+    ID = 0000;
     first_name = in_first_name;
     last_name = in_last_name;
 }
@@ -21,7 +24,6 @@ Student::Student(string in_first_name, string in_last_name, int in_ID) {
     last_name = in_last_name;
     ID = in_ID;
 }
-
 
 // ------------------------------------------------------------ SEARCH COURSES 
 string Student::search_course(sqlite3* db, int choice, string col, string parameter) {  // search via parameter
@@ -42,6 +44,9 @@ string Student::search_course(sqlite3* db, int choice, string col, string parame
     // Check for errors
     if (exit != SQLITE_OK) {
         result = "\nCOURSE NOT FOUND.";
+    }
+    else {
+        result = "\nSEARCH AGAIN? Y/N";
     }
 
     return result;

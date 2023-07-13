@@ -10,14 +10,8 @@ class Student :
 {
 protected:
 	//attritude (data)
-	int CRN;
 	string result;
 	int option;
-	int loop;
-	string courseName;
-	int userID;
-	int found;  // indicator if information was found
-
 
 public:
 	//constructor (initial value)
