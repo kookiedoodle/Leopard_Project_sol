@@ -122,7 +122,7 @@ int main() {
 
     cout << "Connecting to Database . . ." << endl;
     // open the database, *match* to database close (*)
-    exit = sqlite3_open("leopardDatabase.db", &db);
+    exit = sqlite3_open("leopardDB.db", &db);
     if (exit != SQLITE_OK) {
         cout << "ERROR Connecting to the Database.\n\nGoodbye.\n" << endl;
         return 1;
