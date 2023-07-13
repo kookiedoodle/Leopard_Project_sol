@@ -24,53 +24,16 @@ Student::Student(string in_first_name, string in_last_name, int in_ID) {
 
 
 // ------------------------------------------------------------ SEARCH COURSES 
-string Student::search_course() {  // search via parameter
+string Student::search_course(sqlite3* db, int choice, string col, string parameter) {  // search via parameter
     char* errorMessage = nullptr;
-    sqlite3* db;
-    // open DB
-    int exit = sqlite3_open("leopardDatabase.db", &db);
-    if (exit != SQLITE_OK) {
-        result = "Error opening the database.";
-        return result;
-    }
-
-    int choice;
-    string col;
-    string parameter;
-
-    cout << "Enter A Filter To Search Courses By:" << endl;
-    cout << "1. 'CRN'\n2. 'DEPT'\n3. 'DOTW'\n4. 'SEMESTER'\nFilter: ";
-    cin >> choice;
-    switch (choice) {
-    case 1:  // search by CRN
-        col = "CRN";  // assign column
-        cout << "\nEnter Course CRN [101, 141, 211, 231, 331, 501, 601]: ";
-        cin >> parameter;  // assign parameter
-        break;
-    case 2:  // search by crn
-        col = "DEPT";
-        cout << "\nEnter Department Abbreviation [BSEE, BSCO, BSAS, HUSS]: ";
-        cin >> parameter;
-        break;
-    case 3:  // search by dotw
-        col = "DOTW";
-        cout << "\nEnter The First Letter Weekday [M,T,W,R,F]: ";
-        cin >> parameter;
-        break;
-    case 4:  // search by semester
-        col = "SEMESTER";
-        cout << "\nEnter A Semester [SPR, SUM, FAL]: ";
-        cin >> parameter;
-        break;
-    }
 
     // search course given column name and parameter to search (ex. search course provided CRN number)
     string command = "SELECT * FROM COURSES WHERE " + col + " = '" + parameter + "';";  // search column and parameter in that column
 
-    exit = sqlite3_exec(db, command.c_str(), [](void* data, int argc, char** argv, char** azColName) -> int {
+    int exit = sqlite3_exec(db, command.c_str(), [](void* data, int argc, char** argv, char** azColName) -> int {
         // search result output, printing column info currently
         for (int i = 0; i < argc; i++) {
-            std::cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL") << std::endl;
+            cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL") << endl;
         }
 
         return 0;
@@ -80,8 +43,6 @@ string Student::search_course() {  // search via parameter
     if (exit != SQLITE_OK) {
         result = "\nCOURSE NOT FOUND.";
     }
-
-    sqlite3_close(db);  // close DB
 
     return result;
 }
@@ -94,8 +55,8 @@ void Student::add_course(sqlite3* db, int userID, int courseCRN) {
 
     // building SET clause to remove the course CRN from the correct col
     for (int i = 1; i <= 5; ++i) {
-        string columnName = "COURSE_" + std::to_string(i);
-        sql += columnName + " = CASE WHEN " + columnName + " IS NULL THEN " + std::to_string(courseCRN) +
+        string columnName = "COURSE_" + to_string(i);
+        sql += columnName + " = CASE WHEN " + columnName + " IS NULL THEN " + to_string(courseCRN) +
             " ELSE " + columnName + " END";
 
         if (i != 5) {  // separate unless last item
@@ -104,7 +65,7 @@ void Student::add_course(sqlite3* db, int userID, int courseCRN) {
     }
 
     // only update row with the matching user ID
-    sql += " WHERE ID = " + std::to_string(userID);
+    sql += " WHERE ID = " + to_string(userID);
 
     // confirm desired course  deletion
     cout << "Confirm Addition of Course " << courseCRN << endl;
@@ -115,10 +76,10 @@ void Student::add_course(sqlite3* db, int userID, int courseCRN) {
     }
 
     if (exit != SQLITE_OK) {
-        std::cout << "Error executing SQL statement: " << sqlite3_errmsg(db) << std::endl;
+        cout << "Error executing SQL statement: " << sqlite3_errmsg(db) << endl;
     }
     else {
-        std::cout << "Course " << courseCRN << " added to schedule." << std::endl;
+        cout << "Course " << courseCRN << " added to schedule." << endl;
     }
 }
 
@@ -158,23 +119,15 @@ void Student::drop_course(sqlite3* db, int userID, int courseCRN) {
 }
 
 // ------------------------------------------------------------ PRINT SCHEDULE 
-int Student::print_schedule(int user_ID) {
-    sqlite3* db;
+int Student::print_schedule(sqlite3* db, int user_ID) {
     sqlite3_stmt* stmt;
     int userID = user_ID;  // gather user's ID for searching courses
 
     string courses[5]; // 5 cell array to store the courses
 
-    // open database connection
-    int exit = sqlite3_open("leopardDatabase.db", &db);
-    if (exit != SQLITE_OK) {
-        cout << "Cannot open database: " << sqlite3_errmsg(db) << endl;
-        return exit;
-    }
-
     // SQL statement to get courses from matched ID profile
     string sql = "SELECT COURSE_1, COURSE_2, COURSE_3, COURSE_4, COURSE_5 FROM STUDENT WHERE ID = ?";
-    exit = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, NULL);  // prepare statement
+    int exit = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, NULL);  // prepare statement
     if (exit != SQLITE_OK) {  // failed SQL msg
         cout << "Failed to prepare SQL statement: " << sqlite3_errmsg(db) << endl;
         sqlite3_close(db);
