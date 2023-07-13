@@ -66,7 +66,7 @@ int performLogin(sqlite3* db, const string& username, int ID) {
         return exit;
     }
     else {
-        key = 1;  // Student authorization
+        key = 2;  // Student authorization
     }
 
     // Search INSTRUCTOR table for information if not found in STUDENT table
@@ -78,7 +78,7 @@ int performLogin(sqlite3* db, const string& username, int ID) {
             return exit;
         }
         else {
-            key = 2;  // Instructor authorization
+            key = 3;  // Instructor authorization
         }
     }
 
@@ -91,7 +91,7 @@ int performLogin(sqlite3* db, const string& username, int ID) {
             return exit;
         }
         else {
-            key = 3;  // Admin authorization
+            key = 4;  // Admin authorization
         }
     }
 
@@ -114,6 +114,9 @@ int main() {
     int CRN;
     int option = 0;  // menu option selection variable
     int loop = 0;
+    int choice;
+    string col;
+    string parameter;
 
     int key = 0;  // key provided after ID retrieved 
 
@@ -152,14 +155,39 @@ int main() {
     string A_lastName = adminUser.returnLN();  // last name
 
     switch (key) {  // depending on usertype, enter into options menu
-    case 1:  // ---------------- STUDENT ----------------
+    case 2:  // ---------------- STUDENT ----------------
         // way to loop back to menu and cin >> option within each function
         while (exitMenu != 1) {  // allow multiple menu selections and exit when you wish
             menuS();  // print menu for student functions thru displays.cpp
             cin >> option;
             switch (option) {
             case 1:  // ---------------------- SEARCH course list
-                studentUser.search_course();
+                cout << "Enter A Filter To Search Courses By:" << endl;
+                cout << "1. 'CRN'\n2. 'DEPT'\n3. 'DOTW'\n4. 'SEMESTER'\nFilter: ";
+                cin >> choice;
+                switch (choice) {
+                case 1:  // search by CRN
+                    col = "CRN";  // assign column
+                    cout << "\nEnter Course CRN [101, 141, 211, 231, 331, 501, 601]: ";
+                    cin >> parameter;  // assign parameter
+                    break;
+                case 2:  // search by crn
+                    col = "DEPT";
+                    cout << "\nEnter Department Abbreviation [BSEE, BSCO, BSAS, HUSS]: ";
+                    cin >> parameter;
+                    break;
+                case 3:  // search by dotw
+                    col = "DOTW";
+                    cout << "\nEnter The First Letter Weekday [M,T,W,R,F]: ";
+                    cin >> parameter;
+                    break;
+                case 4:  // search by semester
+                    col = "SEMESTER";
+                    cout << "\nEnter A Semester [SPR, SUM, FAL]: ";
+                    cin >> parameter;
+                    break;
+                }
+                studentUser.search_course(db, choice, col, parameter);
                 break;
             case 2:  // ---------------------- ADD/DROP courses
                 loop = 1;
@@ -185,7 +213,7 @@ int main() {
                 }  // while loop
                 break;
             case 3:  // print schedule
-                studentUser.print_schedule(S_userID);  // carryout print schedule function
+                studentUser.print_schedule(db, S_userID);  // carryout print schedule function
                 break;
             case 0:  // logout
                 exitMenu = 1;  // set exitMenu to exit
@@ -193,7 +221,7 @@ int main() {
             }
         }  // while exitMenu != 1
         break;
-    case 2:  // ---------------- INSTRUCTOR ----------------
+    case 3:  // ---------------- INSTRUCTOR ----------------
         menuI();  // print menu for instructor functions
         cin >> option;
         switch (option) {
@@ -207,7 +235,7 @@ int main() {
             break;
         }
         break;
-    case 3:  // ---------------- ADMIN ----------------
+    case 4:  // ---------------- ADMIN ----------------
         menuA();  // print menu for admin functions
         cin >> option;
         switch (option) {
